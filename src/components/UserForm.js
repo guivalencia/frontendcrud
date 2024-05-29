@@ -1,18 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api";
 
-const UserForm = ({ fetchUsers }) => {
+const UserForm = ({ fetchUsers, userToEdit, setUserToEdit, addUser }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+
+    useEffect(() => {
+        if (userToEdit) {
+            setName(userToEdit.name);
+            setEmail(userToEdit.email);
+        }
+    }, [userToEdit]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            await api.post('/users', {
-                name: name,
-                email: email
-            });
-            fetchUsers();
+            if (userToEdit) {
+                await api.put(`/users/${userToEdit.id}`, {
+                    name: name,
+                    email: email
+                });
+                setUserToEdit(null);
+            } else {
+                const response = await api.post('/users', {
+                    name: name,
+                    email: email
+                });
+
+                if(name && email){
+                    addUser(response.data)
+                }
+            }
+            // fetchUsers();
             setName('');
             setEmail('');
         } catch (error) {
