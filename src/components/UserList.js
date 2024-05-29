@@ -1,31 +1,34 @@
-import { useEffect, useState } from "react"
-import api from "../api"
+import { useEffect, useState } from "react";
+import api from "../api";
+
 
 const UserList = () => {
-    const [users, setUsers] = useState([]);
+    const [users,setUsers] = useState([]);
 
     const fetchUsers = async () => {
         try {
-            const response = await api.get('/users')
-            setUsers(response.data)
-        } catch(error){
-            console.error('Erro ao obter usuarios:'. error)
+            const response = await api.get('/users');
+            console.log(response);
+            setUsers(response.data);
+        } catch (error) {
+            console.error('Erro ao obter usuários:', error);
         }
     }
 
     useEffect(() => {
-        fetchUsers()
-    })
+        fetchUsers();
+    }, []);
 
     return (
         <>
             <h1>Lista de Usuários</h1>
             <ul>
-                <li>Usuario 1...</li>
-                <li>Usuario 2...</li>
+                {users.map(users => (
+                    <li key={users.id}>{users.name}</li>
+                ))}
             </ul>
         </>
-    )
+    );
 }
 
-export default UserList
+export default UserList;
