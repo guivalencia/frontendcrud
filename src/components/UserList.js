@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import UserForm from "./UserForm";
 
 
 const UserList = () => {
@@ -8,7 +9,6 @@ const UserList = () => {
     const fetchUsers = async () => {
         try {
             const response = await api.get('/users');
-            console.log(response);
             setUsers(response.data);
         } catch (error) {
             console.error('Erro ao obter usuários:', error);
@@ -19,12 +19,30 @@ const UserList = () => {
         fetchUsers();
     }, []);
 
+    const handleDelete = async (id) => {
+        try {
+            await api.delete(`/users/${id}`);
+            setUsers(users.filter(user=> user.id != id))
+        } catch (error) {
+            console.error('Erro ao excluir usuário:', error);
+        }
+    };
+
+    const handleEdit = (user) => {
+        
+    }
+
     return (
         <>
             <h1>Lista de Usuários</h1>
+            <UserForm fetchUsers={fetchUsers} />
             <ul>
-                {users.map(users => (
-                    <li key={users.id}>{users.name}</li>
+                {users.map(user => (
+                    <li key={user.id}>
+                        {user.name} - {user.email}
+                        <button onClick={() => handleEdit(user)}>Editar</button>
+                        <button onClick={() => handleDelete(user.id)}>Excluir</button>
+                    </li>
                 ))}
             </ul>
         </>
